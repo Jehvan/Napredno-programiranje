@@ -1,6 +1,9 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.LinkedList;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 class ResizableArray<T> {
     private T[] elements;
@@ -155,6 +158,33 @@ class IntegerArray extends ResizableArray<Integer> {
     }
 }
 
+class ArrayTransformer<T,U> extends ResizableArray<T> {
+    public ArrayTransformer() {
+        super();
+    }
+
+    public ResizableArray<U> map(ResizableArray<? extends T> src, Function<? super T, ? extends U> mapper) {
+        ResizableArray<U> dest = new ResizableArray<>();
+        for (int i = 0; i < src.count(); i++) {
+            if (src.elementAt(i) != null) {
+                dest.addElement(mapper.apply(src.elementAt(i)));
+            }
+        }
+        return dest;
+    }
+
+    public ResizableArray<T> filter(ResizableArray<? extends T> src, Predicate<? super T> filter) {
+        ResizableArray<T> dest = new ResizableArray<>();
+        for (int i = 0; i < src.count(); i++) {
+            if (filter.test(src.elementAt(i))) {
+                dest.addElement(src.elementAt(i));
+            }
+        }
+        return dest;
+    }
+
+}
+
 
 public class ResizableArrayTest {
 
@@ -271,6 +301,36 @@ public class ResizableArrayTest {
                 resizable_arrays.add(a);
             }
             System.out.println("You implementation finished in less then 3 seconds, well done!");
+        }
+        if (test == 4) { // testing map functionality
+            ResizableArray<Float> a = new ResizableArray<Float>();
+            Float first = jin.nextFloat();
+            a.addElement(first);
+            Float last = first;
+            while (jin.hasNextFloat()) {
+                last = jin.nextFloat();
+                a.addElement(last);
+            }
+            Function<Float, Integer> f = Float -> Float.intValue();
+            ArrayTransformer<Float, Integer> test_class = new ArrayTransformer<>();
+            ResizableArray<Integer> res = new ResizableArray<>();
+            res = test_class.map(a,f);
+            System.out.println(Arrays.toString(res.toArray()));
+        }
+        if (test == 5) { // testing filter functionality
+            ResizableArray<Integer> a = new ResizableArray<Integer>();
+            int first = jin.nextInt();
+            a.addElement(first);
+            int last = first;
+            while (jin.hasNextInt()) {
+                last = jin.nextInt();
+                a.addElement(last);
+            }
+            Predicate<Integer> isEven = num -> num % 2 == 0;
+            ArrayTransformer<Integer, Integer> test_class = new ArrayTransformer<>();
+            ResizableArray<Integer> res = new ResizableArray<>();
+            res = test_class.filter(a,isEven);
+            System.out.println(Arrays.toString(res.toArray()));
         }
     }
 
