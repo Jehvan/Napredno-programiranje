@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.LinkedList;
+import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -183,6 +181,27 @@ class ArrayTransformer<T,U> extends ResizableArray<T> {
         return dest;
     }
 
+    public T reduce(ResizableArray<? extends T> source, T identity, BinaryOperator<T> accumulator) {
+        for (int i = 0; i < source.count(); i++) {
+            if (source.elementAt(i) != null) {
+                identity = accumulator.apply(identity, source.elementAt(i));
+            }
+        }
+        return identity;
+    }
+
+    public ResizableArray<T> copyIf(ResizableArray<? extends T> source, Predicate<T> predicate) {
+        ResizableArray<T> temp = new ResizableArray<>();
+        for (int i = 0; i < source.count(); i++) {
+            if (source.elementAt(i) != null){
+                if (predicate.test(source.elementAt(i))) {
+                    temp.addElement(source.elementAt(i));
+                }
+            }
+        }
+        return temp;
+    }
+
 }
 
 
@@ -302,21 +321,6 @@ public class ResizableArrayTest {
             }
             System.out.println("You implementation finished in less then 3 seconds, well done!");
         }
-        if (test == 4) { // testing map functionality
-            ResizableArray<Float> a = new ResizableArray<Float>();
-            Float first = jin.nextFloat();
-            a.addElement(first);
-            Float last = first;
-            while (jin.hasNextFloat()) {
-                last = jin.nextFloat();
-                a.addElement(last);
-            }
-            Function<Float, Integer> f = Float -> Float.intValue();
-            ArrayTransformer<Float, Integer> test_class = new ArrayTransformer<>();
-            ResizableArray<Integer> res = new ResizableArray<>();
-            res = test_class.map(a,f);
-            System.out.println(Arrays.toString(res.toArray()));
-        }
         if (test == 5) { // testing filter functionality
             ResizableArray<Integer> a = new ResizableArray<Integer>();
             int first = jin.nextInt();
@@ -330,6 +334,33 @@ public class ResizableArrayTest {
             ArrayTransformer<Integer, Integer> test_class = new ArrayTransformer<>();
             ResizableArray<Integer> res = new ResizableArray<>();
             res = test_class.filter(a,isEven);
+            System.out.println(Arrays.toString(res.toArray()));
+        }
+        ResizableArray<Float> a = new ResizableArray<Float>();
+        Float first = jin.nextFloat();
+        a.addElement(first);
+        Float last =  first;
+        while (jin.hasNextFloat()) {
+            last = jin.nextFloat();
+            a.addElement(last);
+        }
+        if (test == 4) { // testing map functionality
+            Function<Float, Integer> f = Float -> Float.intValue();
+            ArrayTransformer<Float, Integer> test_class = new ArrayTransformer<>();
+            ResizableArray<Integer> res = new ResizableArray<>();
+            res = test_class.map(a,f);
+            System.out.println(Arrays.toString(res.toArray()));
+        }
+        if (test == 6) { // testing BinaryOperator functionality
+            BinaryOperator<Float>  replace = (x,y) -> x + y;
+            ArrayTransformer<Float, Integer> test_class = new ArrayTransformer<>();
+            Float res = test_class.reduce(a,2.5f,replace);
+            System.out.println(res);
+        }
+        if (test == 7) { // testing copyIf functionality
+            Predicate<Float> predicate = num -> num % 4 == 0;
+            ArrayTransformer<Float, Integer> test_class = new ArrayTransformer<>();
+            ResizableArray<Float> res = test_class.copyIf(a,predicate);
             System.out.println(Arrays.toString(res.toArray()));
         }
     }

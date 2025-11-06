@@ -106,6 +106,7 @@ class CarCollection {
 //        }
 //        return carList;
 //        this.sortByPrice(true);
+
         return this.carList.stream().sorted(Comparator.comparing(Car::getModel)).filter(c -> c.getManufacturer().equalsIgnoreCase(manufacturer)).collect(Collectors.toList());
     }
 
