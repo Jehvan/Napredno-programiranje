@@ -1,11 +1,12 @@
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class SchedulerTest {
@@ -98,7 +99,62 @@ public class SchedulerTest {
             Collections.sort(res);
             System.out.println(print(res));
         }
+        if (k == 5) {
+            Scheduler<String> scheduler = new Scheduler<>();
+            LocalDateTime now = LocalDateTime.now();
+            scheduler.add(new Timestamp<>(now.minusHours(2), jin.next()));
+            scheduler.add(new Timestamp<>(now.minusHours(1), jin.next()));
+            scheduler.add(new Timestamp<>(now.minusHours(4), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(2), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(4), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(1), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(5), jin.next()));
+            String description = "hello";
+            Function<String, String> f = c -> "bitch";
+            Predicate<String> match = c -> c.equals(description);
+            Scheduler<String> res =  scheduler.map(scheduler,f,match);
+            System.out.println(res);
+        }
+        if (k == 6) {
+            Scheduler<String> scheduler = new Scheduler<>();
+            LocalDateTime now = LocalDateTime.now();
+            scheduler.add(new Timestamp<>(now.minusHours(2), jin.next()));
+            scheduler.add(new Timestamp<>(now.minusHours(1), jin.next()));
+            scheduler.add(new Timestamp<>(now.minusHours(4), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(2), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(4), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(1), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(5), jin.next()));
+            String description = "hello";
+            Predicate<String> match = c -> c.equals(description);
+            long res =  scheduler.countIf(scheduler, match);
+            System.out.println(res);
+        }
+
+        if (k == 7) {
+            Scheduler<String> scheduler = new Scheduler<>();
+            LocalDateTime now = LocalDateTime.now();
+            scheduler.add(new Timestamp<>(now.minusHours(2), jin.next()));
+            scheduler.add(new Timestamp<>(now.minusHours(1), jin.next()));
+            scheduler.add(new Timestamp<>(now.minusHours(4), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(2), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(4), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(1), jin.next()));
+            scheduler.add(new Timestamp<>(now.plusHours(5), jin.next()));
+            Scheduler<String> scheduler2 = new Scheduler<>();
+            scheduler2.add(new Timestamp<>(now.minusHours(2), jin.next()));
+            scheduler2.add(new Timestamp<>(now.minusHours(1), jin.next()));
+            scheduler2.add(new Timestamp<>(now.minusHours(4), jin.next()));
+            scheduler2.add(new Timestamp<>(now.plusHours(2), jin.next()));
+            scheduler2.add(new Timestamp<>(now.plusHours(4), jin.next()));
+            scheduler2.add(new Timestamp<>(now.plusHours(1), jin.next()));
+            scheduler2.add(new Timestamp<>(now.plusHours(5), jin.next()));
+            Scheduler<String> scheduler3 = new Scheduler<>();
+            scheduler3 = scheduler3.merge(scheduler,scheduler2);
+            System.out.println(scheduler3);
+        }
     }
+
 
     private static LocalDateTime ofEpochMS(long ms) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneId.systemDefault());
@@ -202,35 +258,79 @@ class Scheduler<T> {
     }
 
 
-public Timestamp<T> last() {
-    Timestamp<T> last = new Timestamp<>(null, null);
-    int max = -1000000;
-    boolean flag = true;
-    for (int i = 0; i < size; i++) {
-        if (timestamps[i] != null) {
-            if (timestamps[i].time.isBefore(LocalDateTime.now())) {
-                if (flag) {
-                    flag = false;
-                    last = timestamps[i];
-                }
-                if (last.compareTo(timestamps[i]) < 0) {
-                    last = timestamps[i];
+    public Timestamp<T> last() {
+        Timestamp<T> last = new Timestamp<>(null, null);
+        int max = -1000000;
+        boolean flag = true;
+        for (int i = 0; i < size; i++) {
+            if (timestamps[i] != null) {
+                if (timestamps[i].time.isBefore(LocalDateTime.now())) {
+                    if (flag) {
+                        flag = false;
+                        last = timestamps[i];
+                    }
+                    if (last.compareTo(timestamps[i]) < 0) {
+                        last = timestamps[i];
+                    }
                 }
             }
         }
+        return last;
     }
-    return last;
-}
 
-public List<Timestamp<T>> getAll(LocalDateTime start, LocalDateTime end) {
-    List<Timestamp<T>> res = new ArrayList<>();
-    for (int i = 0; i < size; i++) {
-        if (timestamps[i] != null) {
-            if (timestamps[i].time.isAfter(start) && timestamps[i].time.isBefore(end)) {
-                res.add(timestamps[i]);
+    public List<Timestamp<T>> getAll(LocalDateTime start, LocalDateTime end) {
+        List<Timestamp<T>> res = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            if (timestamps[i] != null) {
+                if (timestamps[i].time.isAfter(start) && timestamps[i].time.isBefore(end)) {
+                    res.add(timestamps[i]);
+                }
             }
         }
+        return res;
     }
-    return res;
-}
+
+    public Scheduler<T> map(Scheduler<? extends T> source, Function<? super T, ? extends T> mapper, Predicate<? super T> filter) {
+        Scheduler<T> temp =  new Scheduler<>();
+        for (int i = 0; i < size; i++) {
+            if (source.timestamps[i] != null && filter.test(source.timestamps[i].element)) {
+                T mappedElement = mapper.apply(source.timestamps[i].element);
+                Timestamp<T> a = new Timestamp<>(LocalDateTime.now(), mappedElement);
+                temp.add(a);
+            }
+        }
+        return temp;
+    }
+
+    public long countIf(Scheduler<? extends T> source, Predicate<? super T> filter) {
+        long count = 0;
+        for (int i = 0; i < size; i++) {
+            if (source.timestamps[i] != null && filter.test(source.timestamps[i].element)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public Scheduler<T> merge(Scheduler<T> source, Scheduler<T> source2) {
+        Scheduler<T> temp = new Scheduler<>();
+        for (int i = 0; i < source.size; i++) {
+            temp.add(source.timestamps[i]);
+        }
+        for (int i = 0; i < source2.size; i++) {
+            temp.add(source2.timestamps[i]);
+        }
+        return temp;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            if (timestamps[i] != null) {
+                sb.append(timestamps[i].toString()).append(" ");
+            }
+        }
+        return sb.toString();
+    }
 }
