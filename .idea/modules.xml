@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Auditoriski/Auditoriski.iml" filepath="$PROJECT_DIR$/Auditoriski/Auditoriski.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Laboratoriski/Lab1/BankApp/BankApp.iml" filepath="$PROJECT_DIR$/Laboratoriski/Lab1/BankApp/BankApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/Exercises/Exercises.iml" filepath="$PROJECT_DIR$/Exercises/Exercises.iml" />
       <module fileurl="file://$PROJECT_DIR$/Kolokviumski/Kolokviumski.iml" filepath="$PROJECT_DIR$/Kolokviumski/Kolokviumski.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Exercises/Kvalifikaciski/Kvalifikaciski.iml" filepath="$PROJECT_DIR$/Exercises/Kvalifikaciski/Kvalifikaciski.iml" />
       <module fileurl="file://$PROJECT_DIR$/Laboratoriski/Lab1/Lab1.iml" filepath="$PROJECT_DIR$/Laboratoriski/Lab1/Lab1.iml" />
       <module fileurl="file://$PROJECT_DIR$/Laboratoriski/Lab2/Lab2.iml" filepath="$PROJECT_DIR$/Laboratoriski/Lab2/Lab2.iml" />
       <module fileurl="file://$PROJECT_DIR$/Laboratoriski/Laboratoriski.iml" filepath="$PROJECT_DIR$/Laboratoriski/Laboratoriski.iml" />
